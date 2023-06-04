@@ -19,6 +19,7 @@ public class Lesson {
     @SequenceGenerator(name = "lesson_gen",sequenceName = "lesson_seq",allocationSize = 1)
     private Long id;
     private String lessonName;
+    private int time;
     @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH})
     private Course course;
     @OneToMany(mappedBy = "lesson",cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH,CascadeType.REMOVE})

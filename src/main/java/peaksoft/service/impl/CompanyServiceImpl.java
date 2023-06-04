@@ -25,7 +25,6 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
-    private final CourseRepository courseRepository;
     @Override
     public CompanyResponse saveCompany(CompanyRequest companyRequest) {
         Company company=new Company();
@@ -36,14 +35,12 @@ public class CompanyServiceImpl implements CompanyService {
        companyRepository.save(company);
         return new CompanyResponse(company.getId(),company.getName(),company.getCountry(),company.getAddress(),company.getPhoneNumber());
     }
-
     @Override
     public CompanyResponse getCompanyById(Long id) {
         return companyRepository.getCompanyById(id)
                 .orElseThrow(() -> new NoSuchElementException("Company with id: " + id + " is not found"));
 
     }
-
     @Override
     public List<CompanyResponse> getAllCompanies() {
         return companyRepository.getAllCompanies();
@@ -69,15 +66,4 @@ public class CompanyServiceImpl implements CompanyService {
         companyRepository.deleteById(id);
         return "Company with id: " + id + " is deleted...";
     }
-//    @Override
-//    public CourseResponse savaCourse(CourseRequest courseRequest, Long companyId) {
-//        Company company = companyRepository.findById(companyId).orElseThrow(() -> new NullPointerException("Company with id: " + companyId + "not found"));
-//        Course course = new Course();
-//        course.setCourseName(courseRequest.getCourseName());
-//        course.setDateOfStart(LocalDate.now());
-//        course.setDescription(courseRequest.getDescription());
-//        company.getCourses().add(course);
-//        courseRepository.save(course);
-//        return new CourseResponse(course.getId(),course.getCourseName(),course.getDateOfStart(),course.getDescription());
-//    }
 }

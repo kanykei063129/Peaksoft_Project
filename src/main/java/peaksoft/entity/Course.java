@@ -25,8 +25,6 @@ public class Course {
     private String description;
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private Company company;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.DETACH,CascadeType.REFRESH})
-    private Instructor instructor;
     @ManyToMany(mappedBy = "courses",cascade = {CascadeType.ALL})
     private List<Group>groups;
     @OneToMany(mappedBy = "course",cascade = {CascadeType.MERGE, CascadeType.DETACH,CascadeType.REFRESH,CascadeType.REMOVE})

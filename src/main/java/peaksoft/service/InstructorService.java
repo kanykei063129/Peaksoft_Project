@@ -14,4 +14,5 @@ public interface InstructorService {
     InstructorResponse updateInstructor(Long id, InstructorRequest instructorRequest);
     String deleteString(Long id);
     String assignInstructorToCompany(Long id,Long companyId);
+//    String assignInstructorToCourse(Long id,Long courseId);
 }

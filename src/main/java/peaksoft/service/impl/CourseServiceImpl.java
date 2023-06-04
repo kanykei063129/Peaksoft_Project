@@ -1,5 +1,6 @@
 package peaksoft.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,29 +26,22 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
-    private final InstructorRepository instructorRepository;
     private final CompanyRepository companyRepository;
 
-//    @Override
-//    public CourseResponse saveCourse(CourseRequest courseRequest) {
-//        Course course = new Course();
-//        course.setCourseName(courseRequest.getCourseName());
-//        course.setDescription(courseRequest.getDescription());
-//        course.setDateOfStart(LocalDate.now());
-//        courseRepository.save(course);
-//        return new CourseResponse(course.getId(), course.getCourseName(), course.getDateOfStart(), course.getDescription());
-//    }
     @Override
-    public CourseResponse savaCourse(Long companyId,CourseRequest courseRequest) {
+    public CourseResponse savaCourse(Long companyId, CourseRequest courseRequest) {
         Company company = companyRepository.findById(companyId).orElseThrow(() -> new NullPointerException("Company with id: " + companyId + "not found"));
         Course course = new Course();
         course.setCourseName(courseRequest.getCourseName());
         course.setDateOfStart(LocalDate.now());
         course.setDescription(courseRequest.getDescription());
         company.getCourses().add(course);
+        course.setCompany(company);
         courseRepository.save(course);
+        companyRepository.save(company);
         return new CourseResponse(course.getId(), course.getCourseName(), course.getDateOfStart(), course.getDescription());
     }
+
     @Override
     public CourseResponse getCourseById(Long id) {
         return courseRepository.getCourseById(id)
@@ -56,8 +50,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> getAllCourse() {
-        return courseRepository.getAllCourses();
+    public List<CourseResponse> getAllCourse(Long companyId, String ascOrDesc) {
+        if (ascOrDesc.equalsIgnoreCase("asc")) {
+            return courseRepository.getAllSortedCourseA(companyId);
+        } else if (ascOrDesc.equalsIgnoreCase("desc")) {
+            return courseRepository.getAllSortedCourseD(companyId);
+        } else {
+            throw new NullPointerException("The list is empty");
+        }
     }
 
     @Override
@@ -66,28 +66,75 @@ public class CourseServiceImpl implements CourseService {
         courseResponse.setCourseName(courseRequest.getCourseName());
         courseResponse.setDescription(courseRequest.getDescription());
         courseRepository.save(courseResponse);
-        return new CourseResponse(courseResponse.getId(), courseResponse.getCourseName(),courseResponse.getDateOfStart() ,courseResponse.getDescription());
+        return new CourseResponse(courseResponse.getId(), courseResponse.getCourseName(), courseResponse.getDateOfStart(), courseResponse.getDescription());
     }
 
     @Override
     public String deleteString(Long id) {
-        boolean exists=courseRepository.existsById(id);
+        boolean exists = courseRepository.existsById(id);
         if (!exists) {
             throw new NoSuchElementException("Course with id: " + id + " is not found");
         }
         courseRepository.deleteById(id);
         return "Course with id: " + id + " is deleted...";
     }
-
-    @Override
-    public String assignCourseToInstructor(Long courseId, Long instructorId) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NullPointerException("Course with id: " + courseId + " is not found"));
-        Instructor instructor =instructorRepository.findById(instructorId).orElseThrow(() -> new NullPointerException("Instructor with id: " + instructorId + " is not found"));
-        if (course == null || instructor == null){
-            return "Invalid course or instructor ID.";
-        }
-        instructor.setCourses((List<Course>) course);
-        instructorRepository.save(instructor);
-        return "The course has been successfully assigned to the instructor";
-    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @Override
+//    public String assignCourseToInstructor(Long courseId, Long instructorId) {
+//        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NullPointerException("Course with id: " + courseId + " is not found"));
+//        Instructor instructor =instructorRepository.findById(instructorId).orElseThrow(() -> new NullPointerException("Instructor with id: " + instructorId + " is not found"));
+//        if (course == null || instructor == null){
+//            return "Invalid course or instructor ID.";
+//        }
+//        instructor.setCourses((List<Course>) course);
+//        instructorRepository.save(instructor);
+//        return "The course has been successfully assigned to the instructor";
+//    }

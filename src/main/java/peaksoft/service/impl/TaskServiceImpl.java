@@ -23,14 +23,16 @@ public class TaskServiceImpl implements TaskService{
     private final LessonRepository lessonRepository;
 
     @Override
-    public TaskResponse saveTask(TaskRequest taskRequest, Long lessonId) {
+    public TaskResponse saveTask(Long lessonId,TaskRequest taskRequest) {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NullPointerException("Lesson with id: " + lessonId + "not found"));
         Task task = new Task();
         task.setTaskName(taskRequest.getTaskName());
         task.setTaskText(taskRequest.getTaskText());
         task.setDeadline(taskRequest.getDeadline());
         lesson.getTasks().add(task);
+        task.setLesson(lesson);
         taskRepository.save(task);
+        lessonRepository.save(lesson);
         return new TaskResponse(task.getId(),task.getTaskName(),task.getTaskText(),task.getDeadline());
     }
 
@@ -40,8 +42,8 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public List<TaskResponse> getAllTasks() {
-        return taskRepository.getAllTask();
+    public List<TaskResponse> getAllTasks(Long lessonId) {
+        return taskRepository.getAllTask(lessonId);
     }
 
     @Override

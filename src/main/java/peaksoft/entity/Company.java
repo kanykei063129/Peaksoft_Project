@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Parent;
+import org.intellij.lang.annotations.Pattern;
 import peaksoft.enums.Country;
 
 import java.util.List;

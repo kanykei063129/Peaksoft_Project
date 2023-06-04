@@ -13,15 +13,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InstructorApi {
     private final InstructorService instructorService;
-
     @GetMapping
-    public List<InstructorResponse> getAllInstructors() {
+     public List<InstructorResponse> getAllInstructors() {
         return instructorService.getAllInstructors();
     }
     @PostMapping
-    public InstructorResponse saveInstructor(@RequestBody InstructorRequest instructorRequest){
+    public InstructorResponse saveInstructor(@RequestBody InstructorRequest instructorRequest) {
         return instructorService.saveInstructor(instructorRequest);
     }
+
+    @PostMapping("/assign/{id}/{companyId}")
+    public String assignInstructorToCompany(@PathVariable Long id,@PathVariable Long companyId){
+        return instructorService.assignInstructorToCompany(id,companyId);
+}
     @GetMapping("/{id}")
     public InstructorResponse getById(@PathVariable Long id){
         return instructorService.getInstructorById(id);

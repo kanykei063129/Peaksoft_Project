@@ -13,8 +13,9 @@ import java.util.Optional;
 
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson,Long> {
+    @Query("select new peaksoft.dto.response.LessonResponse(l.id,l.lessonName) from Lesson l where l.id=?1")
     Optional<LessonResponse>getLessonById(Long id);
 
-    @Query("select new peaksoft.dto.response.LessonResponse(l.id,l.lessonName) from Lesson l")
-    List<LessonResponse> getAllLesson();
+    @Query("select new peaksoft.dto.response.LessonResponse(l.id,l.lessonName) from Lesson l where l.course.id = :courseId")
+    List<LessonResponse> getAllLesson(Long courseId);
 }

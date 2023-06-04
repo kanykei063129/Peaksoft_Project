@@ -11,33 +11,23 @@ import peaksoft.service.CompanyService;
 import peaksoft.service.CourseService;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/courses")
 @RequiredArgsConstructor
 public class CourseApi {
     private final CourseService courseService;
-    private final CompanyService  companyService;
-    @GetMapping
-    public List<CourseResponse> getAllCourses() {
-        return courseService.getAllCourse();
+
+    @GetMapping("/{companyId}")
+    public List<CourseResponse> getAllCourses(@PathVariable Long companyId, @RequestParam String ascOrDesc) {
+        return courseService.getAllCourse(companyId, ascOrDesc);
     }
 
-//    @PostMapping
-//    public CourseResponse saveCourse(@RequestBody CourseRequest courseRequest) {
-//        return courseService.(courseRequest);
-//    }
-//    @GetMapping("/createHouse")
-//    public CourseResponse createCourse(@RequestBody CourseRequest courseRequest,@PathVariable Long companyId) {
-//       return companyService.savaCourse(courseRequest,companyId);
-
-
-    @PostMapping
-    public CourseResponse saveCourse(@RequestBody CourseRequest courseRequest,
-                            @RequestParam("companyName") Long companyId) {
+    @PostMapping("/save/{companyId}")
+    public CourseResponse saveCourse(@PathVariable Long companyId, @RequestBody CourseRequest courseRequest) {
         return courseService.savaCourse(companyId, courseRequest);
     }
-    @GetMapping("/{id}")
+
+    @GetMapping("/by/{id}")
     public CourseResponse getCourseById(@PathVariable Long id){
         return courseService.getCourseById(id);
     }
@@ -46,8 +36,10 @@ public class CourseApi {
     public CourseResponse updateCourse(@PathVariable Long id, @RequestBody CourseRequest courseRequest){
         return courseService.updateCourse(id, courseRequest);
     }
+
     @DeleteMapping("/{id}")
     public String deleteCourse(@PathVariable Long id){
         return courseService.deleteString(id);
     }
 }
+

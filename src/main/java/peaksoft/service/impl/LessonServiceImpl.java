@@ -22,16 +22,15 @@ public class LessonServiceImpl implements LessonService{
     private final CourseRepository courseRepository;
 
     @Override
-    public LessonResponse saveLesson(LessonRequest lessonRequest, Long courseId) {
-//        Lesson lesson = new Lesson();
-//        lesson.setLessonName(lessonRequest.getLessonName());
-//        lessonRepository.save(lesson);
-//        return new LessonResponse(lesson.getId(),lesson.getLessonName());
+    public LessonResponse saveLesson(Long courseId,LessonRequest lessonRequest) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new NullPointerException("Course with id: " + courseId + "not found"));
         Lesson lesson = new Lesson();
         lesson.setLessonName(lessonRequest.getLessonName());
+        lesson.setTime(lessonRequest.getTime());
         course.getLessons().add(lesson);
+        lesson.setCourse(course);
         lessonRepository.save(lesson);
+        courseRepository.save(course);
         return new LessonResponse(lesson.getId(),lesson.getLessonName());
     }
 
@@ -41,8 +40,8 @@ public class LessonServiceImpl implements LessonService{
     }
 
     @Override
-    public List<LessonResponse> getAllLessons() {
-        return lessonRepository.getAllLesson();
+    public List<LessonResponse> getAllLessons(Long courseId) {
+        return lessonRepository.getAllLesson(courseId);
     }
 
     @Override

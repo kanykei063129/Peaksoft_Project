@@ -20,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompanyApi {
     private final CompanyService companyService;
-    private final CourseService courseService;
 
     @GetMapping
     public List<CompanyResponse> getAllCompanies() {
@@ -45,10 +44,4 @@ public class CompanyApi {
     public String deleteCompany(@PathVariable Long id) {
         return companyService.deleteString(id);
     }
-
-//    @PostMapping("/courses")
-//    public ResponseEntity<CourseResponse> createCourse(@RequestBody CourseRequest courseRequest, @PathVariable Long companyId) {
-//        CourseResponse response = companyService.savaCourse(courseRequest, companyId);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//    }
 }

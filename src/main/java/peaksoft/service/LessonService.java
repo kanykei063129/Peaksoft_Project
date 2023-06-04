@@ -8,9 +8,9 @@ import peaksoft.entity.Lesson;
 import java.util.List;
 
 public interface LessonService {
-    LessonResponse saveLesson(LessonRequest lessonRequest,Long courseId);
+    LessonResponse saveLesson(Long courseId,LessonRequest lessonRequest);
     LessonResponse getLessonById(Long id);
-    List<LessonResponse> getAllLessons();
+    List<LessonResponse> getAllLessons(Long courseId);
     LessonResponse updateLesson(Long id, LessonRequest lessonRequest);
     String deleteString(Long id);
 }

@@ -19,18 +19,20 @@ import peaksoft.repository.InstructorRepository;
 import peaksoft.repository.StudentRepository;
 import peaksoft.service.StudentService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final GroupRepository groupRepository;
+
     @Override
     public StudentResponse saveStudent(StudentRequest studentRequest) {
-        Student student =new Student();
+        Student student = new Student();
         student.setFirstName(studentRequest.getFirstName());
         student.setLastName(studentRequest.getLastName());
         student.setPhoneNumber(studentRequest.getPhoneNumber());
@@ -39,7 +41,7 @@ public class StudentServiceImpl implements StudentService{
         student.setGender(studentRequest.getGender());
         student.setIsBlocked(false);
         studentRepository.save(student);
-        return new StudentResponse(student.getId(),student.getFirstName(),student.getLastName(),student.getPhoneNumber(),student.getEmail(),student.getStudyFormat());
+        return new StudentResponse(student.getId(), student.getFirstName(), student.getLastName(), student.getPhoneNumber(), student.getEmail(), student.getStudyFormat(), student.getIsBlocked());
     }
 
     @Override
@@ -50,9 +52,16 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public List<StudentResponse> getAllStudents() {
-        return studentRepository.getAllStudents();
+    public List<StudentResponse> getAllStudents(Long groupId, StudyFormat studyFormat) {
+        Student s=new Student();
+        if (studyFormat.equals("ONLINE")) {
+            return studentRepository.getAllOnlineStudents(groupId);
+        } else if(studyFormat.equals("OFFLINE")) {
+            return studentRepository.getAllOfflineStudents(groupId);
+        }
+        return Collections.singletonList(StudentResponse.builder().id(s.getId()).firstName(s.getFirstName()).lastName(s.getLastName()).phoneNumber(s.getPhoneNumber()).email(s.getEmail()).studyFormat(s.getStudyFormat()).isBlocked(s.getIsBlocked()).build());
     }
+
     @Override
     public StudentResponse updateStudent(Long id, StudentRequest studentRequest) {
         Student studentResponse = studentRepository.findById(id)
@@ -64,12 +73,12 @@ public class StudentServiceImpl implements StudentService{
         studentResponse.setStudyFormat(studentRequest.getStudyFormat());
         studentResponse.setGender(studentRequest.getGender());
         studentRepository.save(studentResponse);
-        return new StudentResponse(studentResponse.getId(),studentResponse.getFirstName(),studentResponse.getLastName(),studentResponse.getPhoneNumber(),studentResponse.getEmail(),studentResponse.getStudyFormat());
+        return new StudentResponse(studentResponse.getId(), studentResponse.getFirstName(), studentResponse.getLastName(), studentResponse.getPhoneNumber(),studentResponse.getEmail(), studentResponse.getStudyFormat(),studentResponse.getIsBlocked());
     }
 
     @Override
     public String deleteStudent(Long id) {
-        boolean exists=studentRepository.existsById(id);
+        boolean exists = studentRepository.existsById(id);
         if (!exists) {
             throw new NoSuchElementException("Student with id: " + id + " is not found");
         }
@@ -82,25 +91,23 @@ public class StudentServiceImpl implements StudentService{
     public String assignStudentToGroup(Long id, Long groupId) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new NullPointerException("Student with id: " + id + " is not found"));
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new NullPointerException("Group with id: " + groupId + " is not found"));
-
-        if (student == null || group == null) {
-            return "Invalid student or group ID";
-        }
-        if (student.getGroup() != null) {
-            return "The student is already assigned to another group.";
-        }
-        student.setGroup(group);
+        group.getStudents().add(student);
+       student.setGroup(group);
         studentRepository.save(student);
-
+        groupRepository.save(group);
         return "The student has been successfully assigned to a group.";
     }
-    @Override
-    public String blockStudent(Long id, Boolean isBlocked) {
-        return null;
-    }
+//    @Override
+//    public List<StudentResponse> getStudentsByIsBlockedOrNot(Boolean isBlocked) {
+//        return studentRepository.findAllByIsBlocked(isBlocked);
+//    }
+
 
     @Override
-    public List<StudentResponse> getAllBlockStudent(Boolean isBlocked) {
-        return null;
+    public String blockUnblockStudent(Long studentId, Boolean block) {
+        Student student1 = studentRepository.findById(studentId).orElseThrow(() -> new NoSuchElementException("Student with id:" + studentId + "is not found"));
+        student1.setIsBlocked(block);
+        studentRepository.save(student1);
+        return "Blocked, Student with id:" + studentId + "is blocked";
     }
 }

@@ -12,6 +12,7 @@ import peaksoft.repository.CompanyRepository;
 import peaksoft.repository.InstructorRepository;
 import peaksoft.service.InstructorService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -44,7 +45,6 @@ public class InstructorServiceImpl implements InstructorService{
     public List<InstructorResponse> getAllInstructors() {
         return instructorRepository.getAllInstructors();
     }
-
     @Override
     public InstructorResponse updateInstructor(Long id, InstructorRequest instructorRequest) {
         Instructor instructorResponse = instructorRepository.findById(id).orElseThrow(() -> new NullPointerException("Instructor with id: " + id + " is not found"));
@@ -65,17 +65,14 @@ public class InstructorServiceImpl implements InstructorService{
         instructorRepository.deleteById(id);
         return "Instructor with id: " + id + " is deleted...";
     }
-
     @Override
     public String assignInstructorToCompany(Long id, Long companyId) {
         Instructor instructor = instructorRepository.findById(id).orElseThrow(() -> new NullPointerException("Instructor with id: " + id + " is not found"));
         Company company = companyRepository.findById(companyId).orElseThrow(() -> new NullPointerException("Company with id: " + companyId + " is not found"));
-        if(instructor == null || company == null){
-            return "Invalid Instructor or Company ID.";
-        }
-        instructor.setCompanies((List<Company>) company);
+        company.getInstructors().add(instructor);
+        instructor.getCompanies().add(company);
         instructorRepository.save(instructor);
-
+        companyRepository.save(company);
         return "The instructor has been successfully assigned to the company.";
     }
     }

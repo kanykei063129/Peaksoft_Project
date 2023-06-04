@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group,Long> {
+    @Query("select new peaksoft.dto.response.GroupResponse(g.id,g.groupName,g.description,g.imageLink) from Group  g where g.id=?1")
     Optional<GroupResponse> getGroupById(Long id);
     @Query("select new peaksoft.dto.response.GroupResponse(g.id,g.groupName,g.description,g.imageLink) from Group g")
     List<GroupResponse> getAllGroup();

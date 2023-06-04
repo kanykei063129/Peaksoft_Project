@@ -17,15 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GroupApi {
     private final GroupService groupService;
-
     @GetMapping
     public List<GroupResponse> getAllGroups() {
         return groupService.getAllGroups();
     }
-
-        @PostMapping("/{courseId}")
-        public GroupResponse saveGroup(@RequestBody GroupRequest groupRequest, @PathVariable Long courseId) {
-            return groupService.saveGroup(groupRequest, courseId);
+    @PostMapping("/save/{courseId}")
+    public GroupResponse saveGroup(@PathVariable Long courseId,@RequestBody GroupRequest groupRequest) {
+        return groupService.saveGroup(courseId,groupRequest);
     }
     @GetMapping("/{id}")
     public GroupResponse getGroupById(@PathVariable Long id){

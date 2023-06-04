@@ -14,5 +14,4 @@ public interface CompanyService {
     List<CompanyResponse> getAllCompanies();
     CompanyResponse updateCompany(Long id, CompanyRequest companyRequest);
     String deleteString(Long id);
-//    CourseResponse savaCourse(CourseRequest courseRequest,Long companyId);
 }

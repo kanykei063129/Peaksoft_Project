@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Value;
+import org.intellij.lang.annotations.Pattern;
 
 import java.util.List;
 
@@ -25,6 +26,4 @@ public class Instructor {
     private String specialization;
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH,CascadeType.REFRESH})
     private List<Company>companies;
-    @OneToMany(mappedBy = "instructor",cascade = {CascadeType.ALL})
-    private List<Course>courses;
 }

@@ -3,6 +3,7 @@ package peaksoft.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import peaksoft.entity.Company;
 
 import java.time.LocalDate;
 

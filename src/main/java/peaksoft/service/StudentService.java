@@ -4,16 +4,28 @@ import peaksoft.dto.request.StudentRequest;
 import peaksoft.dto.response.StudentResponse;
 import peaksoft.entity.Company;
 import peaksoft.entity.Student;
+import peaksoft.enums.StudyFormat;
 
 import java.util.List;
 
 public interface StudentService {
     StudentResponse saveStudent(StudentRequest studentRequest);
     StudentResponse getStudentById(Long id);
-    List<StudentResponse> getAllStudents();
+    List<StudentResponse> getAllStudents(Long groupId, StudyFormat studyFormat);
     StudentResponse updateStudent(Long id, StudentRequest studentRequest);
     String deleteStudent(Long id);
     String assignStudentToGroup(Long id,Long groupId);
-    String blockStudent(Long id,Boolean isBlocked);
-    List<StudentResponse> getAllBlockStudent(Boolean isBlocked);
+//    List<StudentResponse> getStudentsByIsBlockedOrNot(Boolean isBlocked);
+    String blockUnblockStudent(Long studentId, Boolean block);
+
+
+
+
+
+
+
+
+
+
+//    List<StudentResponse> getAllBlockStudent(Boolean isBlocked);
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.intellij.lang.annotations.Pattern;
 import org.springframework.beans.factory.annotation.Value;
 import peaksoft.enums.Gender;
 import peaksoft.enums.StudyFormat;
@@ -30,7 +31,9 @@ public class Student {
     @Column(unique = true)
     private String email;
     @Value("study_format")
+    @Enumerated(EnumType.STRING)
     private StudyFormat studyFormat;
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     private Boolean isBlocked;
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.DETACH,CascadeType.REFRESH})
