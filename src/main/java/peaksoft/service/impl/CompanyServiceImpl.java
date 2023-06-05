@@ -7,6 +7,7 @@ import peaksoft.dto.request.CompanyRequest;
 import peaksoft.dto.request.CourseRequest;
 import peaksoft.dto.response.CompanyResponse;
 import peaksoft.dto.response.CourseResponse;
+import peaksoft.dto.response.simpl.Companyy;
 import peaksoft.entity.Company;
 import peaksoft.entity.Course;
 import peaksoft.entity.Group;
@@ -26,44 +27,63 @@ import java.util.NoSuchElementException;
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     @Override
-    public CompanyResponse saveCompany(CompanyRequest companyRequest) {
-        Company company=new Company();
-       company.setName(companyRequest.getName());
-       company.setCountry(companyRequest.getCountry());
-       company.setAddress(companyRequest.getAddress());
-       company.setPhoneNumber(companyRequest.getPhoneNumber());
-       companyRepository.save(company);
-        return new CompanyResponse(company.getId(),company.getName(),company.getCountry(),company.getAddress(),company.getPhoneNumber());
+    public String saveCompany(CompanyRequest companyRequest) {
+        Company company = new Company();
+        company.setName(companyRequest.getName());
+        company.setCountry(companyRequest.getCountry());
+        company.setAddress(companyRequest.getAddress());
+        company.setPhoneNumber(companyRequest.getPhoneNumber());
+        companyRepository.save(company);
+        return "Saved Company";
     }
-    @Override
-    public CompanyResponse getCompanyById(Long id) {
-        return companyRepository.getCompanyById(id)
-                .orElseThrow(() -> new NoSuchElementException("Company with id: " + id + " is not found"));
 
-    }
+
     @Override
     public List<CompanyResponse> getAllCompanies() {
         return companyRepository.getAllCompanies();
     }
 
-    @Override
-    public CompanyResponse updateCompany(Long id, CompanyRequest companyRequest) {
-        Company companyResponse= companyRepository.findById(id).orElseThrow(() -> new NullPointerException("Company with id: " + id + " is not found"));
-        companyResponse.setName(companyRequest.getName());
-        companyResponse.setCountry(companyRequest.getCountry());
-        companyResponse.setAddress(companyRequest.getAddress());
-        companyResponse.setPhoneNumber(companyRequest.getPhoneNumber());
-        companyRepository.save(companyResponse);
-        return new CompanyResponse(companyResponse.getId(),companyResponse.getName(),companyResponse.getCountry(),companyResponse.getAddress(),companyResponse.getPhoneNumber());
-    }
 
     @Override
-    public String deleteString(Long id) {
-        boolean exists=companyRepository.existsById(id);
-        if (!exists) {
-            throw new NoSuchElementException("Company with id: " + id + " is not found");
-        }
-        companyRepository.deleteById(id);
-        return "Company with id: " + id + " is deleted...";
+    public CompanyResponse getCompanyById(Long companyId) {
+        return companyRepository.getCompanyById(companyId) .orElseThrow(() -> new NoSuchElementException("Company with id:" + companyId + "is not found"));
     }
-}
+
+
+
+    @Override
+    public String updateCompany(Long companyId, CompanyRequest companyRequest) {
+        Company company1 = companyRepository.findById(companyId).orElseThrow(() ->
+                new RuntimeException("Company with id : " + companyId + " not found"));
+        company1.setName(companyRequest.getName());
+        company1.setCountry(companyRequest.getCountry());
+        company1.setAddress(companyRequest.getAddress());
+        company1.setPhoneNumber(companyRequest.getPhoneNumber());
+        companyRepository.save(company1);
+        return "Company successfully updated ...!";
+    }
+
+
+    @Override
+    public String deleteCompanyById(Long companyId) {
+        companyRepository.deleteById(companyId);
+        return "Company deleted successfully!";
+    }
+
+
+    @Override
+    public Companyy infoCompany(Long companyId) {
+        CompanyResponse c = companyRepository.getCompanyById(companyId).orElseThrow(() -> new NoSuchElementException("Company with id:" + companyId + "is not found"));
+        return Companyy.builder()
+                .id(c.getId())
+                .name(c.getName())
+                .address(c.getAddress())
+                .country(c.getCountry())
+                .phoneNumber(c.getPhoneNumber())
+                .courseName(companyRepository.getAllCourseName(companyId))
+                .groupName(companyRepository.getAllGroupName(companyId))
+                .studentCount(companyRepository.getAllStudentSize(companyId))
+                .instructorName(companyRepository.getAllInstructorName(companyId))
+                .build();
+    }
+    }

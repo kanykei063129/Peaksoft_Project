@@ -2,6 +2,7 @@ package peaksoft.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import peaksoft.dto.request.GroupRequest;
 import peaksoft.dto.response.GroupResponse;
@@ -21,9 +22,8 @@ import java.util.NoSuchElementException;
 public class GroupServiceImpl implements GroupService{
     private final GroupRepository groupRepository;
     private final CourseRepository courseRepository;
-
     @Override
-    public GroupResponse saveGroup(Long courseId,GroupRequest groupRequest) {
+    public GroupResponse saveGroup(Long courseId, GroupRequest groupRequest) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new NullPointerException("Course with id: " + courseId + "not found"));
         Group group = new Group();
         group.setGroupName(groupRequest.getGroupName());
@@ -31,41 +31,44 @@ public class GroupServiceImpl implements GroupService{
         group.setDescription(groupRequest.getDescription());
         course.getGroups().add(group);
         groupRepository.save(group);
-        courseRepository.save(course);
-        return new GroupResponse(
-                group.getId(),
-                group.getGroupName(),
-                group.getImageLink(),
-                group.getDescription());
+        return new GroupResponse(group.getId(), group.getGroupName(), group.getImageLink(),group.getDescription());
     }
 
-    @Override
-    public GroupResponse getGroupById(Long id) {
-        return groupRepository.getGroupById(id).orElseThrow(() -> new NoSuchElementException("Group with id: " + id + " is not found"));
-    }
 
     @Override
     public List<GroupResponse> getAllGroups() {
-      return groupRepository.getAllGroup();
+        return groupRepository.getAllGroup();
+
     }
     @Override
-    public GroupResponse updateGroup(Long id, GroupRequest groupRequest) {
-        Group groupResponse = groupRepository.findById(id).orElseThrow(() -> new NullPointerException("Group with id: " + id + " is not found"));
-        groupResponse.setGroupName(groupRequest.getGroupName());
-        groupResponse.setDescription(groupRequest.getDescription());
-        groupResponse.setImageLink(groupRequest.getImageLink());
-        groupRepository.save(groupResponse);
-        return new GroupResponse(groupResponse.getId(),groupResponse.getGroupName(),groupResponse.getDescription(),groupResponse.getImageLink());
+    public GroupResponse getGroupById(Long groupId) {
+        return groupRepository.getGroupById(groupId).orElseThrow(() -> new NoSuchElementException("Group with id:" + groupId + " doesn't exist"));
     }
-
     @Override
-    public String deleteString(Long id) {
-        boolean exists=groupRepository.existsById(id);
-       if (!exists){
-           throw new NoSuchElementException("Group with id: " + id + " is not found");
-       }
-       groupRepository.deleteById(id);
-        return "Group with id: " + id + " is deleted...";
+    public GroupResponse updateGroup(Long groupId, GroupRequest groupRequest) {
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new RuntimeException("Group with id:" + groupId + " not found"));
+        group.setGroupName(groupRequest.getGroupName());
+        group.setDescription(groupRequest.getDescription());
+        group.setImageLink(groupRequest.getImageLink());
+        groupRepository.save(group);
+        return GroupResponse.builder().id(group.getId()).groupName(groupRequest.getGroupName()).description(groupRequest.getDescription()).imageLink(groupRequest.getImageLink()).build();
     }
+    @Override
+    public String deleteGroup(Long groupId) {
+        try {
+            Group group = groupRepository.findById(groupId)
+                    .orElseThrow(() -> new NoSuchElementException("Group with id: " + groupId + " not found!"));
+            for (Course course : group.getCourses()) {
+                if (course != null) {
+                    course.getGroups().remove(group);
+                }
+                groupRepository.delete(group);
+            }
+            return "Group with id:" + groupId + " is deleted...";
 
+
+        } catch (RuntimeException e) {
+            return "Group with id:"+ groupId + " is not found :" + e.getMessage();
+        }
+    }
 }

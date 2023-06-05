@@ -1,5 +1,6 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import peaksoft.dto.request.CompanyRequest;
 import peaksoft.dto.request.CourseRequest;
 import peaksoft.dto.response.CompanyResponse;
 import peaksoft.dto.response.CourseResponse;
+import peaksoft.dto.response.simpl.Companyy;
 import peaksoft.entity.Company;
 import peaksoft.entity.Student;
 import peaksoft.service.CompanyService;
@@ -27,7 +29,7 @@ public class CompanyApi {
     }
 
     @PostMapping
-    public CompanyResponse saveCompany(@RequestBody CompanyRequest companyRequest) {
+    public String saveCompany(@RequestBody CompanyRequest companyRequest) {
         return companyService.saveCompany(companyRequest);
     }
     @GetMapping("/{id}")
@@ -36,12 +38,16 @@ public class CompanyApi {
     }
 
     @PutMapping("/{id}")
-    public CompanyResponse updateCompany(@PathVariable Long id, @RequestBody CompanyRequest companyRequest) {
-        return companyService.updateCompany(id, companyRequest);
+    public String updateCompany(@PathVariable Long id, @RequestBody CompanyRequest companyRequest) {
+        return companyService.updateCompany(id,companyRequest);
     }
 
     @DeleteMapping("/{id}")
     public String deleteCompany(@PathVariable Long id) {
-        return companyService.deleteString(id);
+        return companyService.deleteCompanyById(id);
+    }
+    @GetMapping("/info/{companyId}")
+    public Companyy company(@PathVariable Long companyId){
+        return companyService.infoCompany(companyId);
     }
 }

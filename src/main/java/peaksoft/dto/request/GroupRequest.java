@@ -1,5 +1,6 @@
 package peaksoft.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GroupRequest {
+        @NotEmpty(message = "Name should not be empty")
     private String groupName;
     private String description;
     private String imageLink;

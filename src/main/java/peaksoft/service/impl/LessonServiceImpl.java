@@ -20,46 +20,52 @@ import java.util.NoSuchElementException;
 public class LessonServiceImpl implements LessonService{
     private final LessonRepository lessonRepository;
     private final CourseRepository courseRepository;
-
     @Override
     public LessonResponse saveLesson(Long courseId,LessonRequest lessonRequest) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NullPointerException("Course with id: " + courseId + "not found"));
-        Lesson lesson = new Lesson();
-        lesson.setLessonName(lessonRequest.getLessonName());
-        lesson.setTime(lessonRequest.getTime());
-        course.getLessons().add(lesson);
-        lesson.setCourse(course);
-        lessonRepository.save(lesson);
-        courseRepository.save(course);
-        return new LessonResponse(lesson.getId(),lesson.getLessonName());
+        try {
+            Course course = courseRepository.findById(courseId).orElseThrow(() -> new NoSuchElementException("Lesson with id: " + courseId + " not found"));
+            Lesson lesson = new Lesson();
+            lesson.setLessonName(lessonRequest.getLessonName());
+            lesson.setTime(lessonRequest.getTime());
+            lesson.setCourse(course);
+            lessonRepository.save(lesson);
+            courseRepository.save(course);
+            return LessonResponse.builder().id(lesson.getId()).lessonName(lessonRequest.getLessonName()).time(lessonRequest.getTime()).build();
+        } catch (Exception e) {
+            throw new NoSuchElementException("Lesson with id:" + courseId + " is not found");
+        }
     }
-
-    @Override
-    public LessonResponse getLessonById(Long id) {
-        return lessonRepository.getLessonById(id).orElseThrow(() -> new NoSuchElementException("Lesson with id: " + id + " is not found"));
-    }
-
     @Override
     public List<LessonResponse> getAllLessons(Long courseId) {
         return lessonRepository.getAllLesson(courseId);
     }
-
     @Override
-    public LessonResponse updateLesson(Long id, LessonRequest lessonRequest) {
-        Lesson lessonResponse = lessonRepository.findById(id).orElseThrow(() -> new NullPointerException("Lesson with id: " + id + " is not found"));
-        lessonResponse.setLessonName(lessonRequest.getLessonName());
-        lessonRepository.save(lessonResponse);
-        return new LessonResponse(lessonResponse.getId(),lessonResponse.getLessonName());
+    public LessonResponse getLessonById(Long lessonId) {
+        return lessonRepository.getLessonById(lessonId).orElseThrow(() -> new RuntimeException("Lesson with id: " + lessonId + " not found!"));
+
     }
-
     @Override
-    public String deleteString(Long id) {
-        boolean exists=lessonRepository.existsById(id);
-        if (!exists) {
-            throw new NoSuchElementException("Lesson with id: " + id + " is not found");
+    public LessonResponse updateLesson(Long lessonId, LessonRequest lessonRequest) {
+        Lesson lesson=lessonRepository.findById(lessonId).orElseThrow(() -> new RuntimeException("Course with id: " + lessonId + "not found!"));
+        lesson.setLessonName(lessonRequest.getLessonName());
+        lesson.setTime(lessonRequest.getTime());
+        lessonRepository.save(lesson);
+        return LessonResponse.builder().id(lesson.getId()).lessonName(lessonRequest.getLessonName()).time(lessonRequest.getTime()).build();
+    }
+    @Override
+    public String deleteLesson(Long lessonId) {
+        try {
+            Lesson lesson = lessonRepository.findById(lessonId)
+                    .orElseThrow(() -> new RuntimeException("Lesson with id: " + lessonId + " not found!"));
+            Course course = lesson.getCourse();
+            if (course != null) {
+                course.getLessons().remove(course);
+            }
+            lessonRepository.delete(lesson);
+            return  "Lesson with id: " + lessonId + " is deleted...";
+        } catch (RuntimeException e) {
+            return "Failed to delete course: " + e.getMessage();
         }
-        lessonRepository.deleteById(id);
-        return "Lesson with id: " + id + " is deleted...";
     }
     }
 

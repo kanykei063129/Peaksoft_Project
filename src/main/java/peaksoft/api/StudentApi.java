@@ -1,5 +1,6 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,8 @@ import java.util.List;
 public class StudentApi {
     private final StudentService studentService;
     @GetMapping("/{groupId}")
-    public List<StudentResponse> getAllStudents(@PathVariable Long groupId, StudyFormat studyFormat) {
-        return studentService.getAllStudents(groupId,studyFormat);
+    public List<StudentResponse> getAllStudents(@PathVariable Long groupId) {
+        return studentService.getAllStudents(groupId);
     }
 
     @PostMapping
@@ -27,7 +28,7 @@ public class StudentApi {
 
     @PostMapping("/{id}/{groupId}")
     public String assignStudentToGroup(@PathVariable Long id, @PathVariable Long groupId) {
-        return studentService.assignStudentToGroup(id, groupId);
+        return studentService.assignStudentsToGroup(id, groupId);
     }
 
     @GetMapping("/by{id}")
@@ -45,8 +46,17 @@ public class StudentApi {
         return studentService.deleteStudent(id);
     }
 
-    @PostMapping("/{studentId}")
+    @PostMapping("/block/{studentId}")
     public String blockUnblockStudent(@PathVariable Long studentId, @RequestParam Boolean block) {
         return studentService.blockUnblockStudent(studentId, block);
+    }
+        @GetMapping("/block")
+    public List<StudentResponse>getStudentsByBlockedOrNot(@RequestParam (required = false) Boolean isBlocked){
+        return studentService.getAllIsBlocked(isBlocked);
+    }
+
+    @GetMapping("/filter")
+    public  List<StudentResponse>filterStudent(@RequestParam (required = false) StudyFormat studyFormat){
+        return studentService.filterStudents(studyFormat);
     }
 }

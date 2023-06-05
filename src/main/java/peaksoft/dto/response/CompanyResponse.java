@@ -13,8 +13,6 @@ public class CompanyResponse {
     private String address;
     private String phoneNumber;
 
-    public CompanyResponse() {
-    }
 
     public CompanyResponse(Long id, String name, Country country, String address, String phoneNumber) {
         this.id = id;

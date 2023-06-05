@@ -1,5 +1,6 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.request.StudentRequest;
@@ -23,7 +24,7 @@ public class TaskApi {
 
     @PostMapping("/save/{lessonId}")
     public TaskResponse saveStudent(@PathVariable Long lessonId,@RequestBody TaskRequest taskRequest) {
-        return taskService.saveTask(lessonId,taskRequest);
+        return taskService.save(lessonId,taskRequest);
     }
 
     @GetMapping("/by/{id}")
@@ -38,7 +39,6 @@ public class TaskApi {
 
     @DeleteMapping("/{id}")
     public String deleteTask(@PathVariable Long id) {
-        return taskService.deleteString(id);
+        return taskService.deleteTask(id);
     }
 }
-

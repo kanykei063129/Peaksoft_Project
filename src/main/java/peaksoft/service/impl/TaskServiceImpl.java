@@ -12,8 +12,11 @@ import peaksoft.repository.LessonRepository;
 import peaksoft.repository.TaskRepository;
 import peaksoft.service.TaskService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @Transactional
@@ -21,24 +24,22 @@ import java.util.NoSuchElementException;
 public class TaskServiceImpl implements TaskService{
     private final TaskRepository taskRepository;
     private final LessonRepository lessonRepository;
-
     @Override
-    public TaskResponse saveTask(Long lessonId,TaskRequest taskRequest) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NullPointerException("Lesson with id: " + lessonId + "not found"));
-        Task task = new Task();
-        task.setTaskName(taskRequest.getTaskName());
-        task.setTaskText(taskRequest.getTaskText());
-        task.setDeadline(taskRequest.getDeadline());
-        lesson.getTasks().add(task);
-        task.setLesson(lesson);
-        taskRepository.save(task);
-        lessonRepository.save(lesson);
-        return new TaskResponse(task.getId(),task.getTaskName(),task.getTaskText(),task.getDeadline());
-    }
-
-    @Override
-    public TaskResponse getTaskById(Long id) {
-        return taskRepository.getTaskById(id).orElseThrow(() -> new NoSuchElementException("Task with id: " + id + "is not found"));
+    public TaskResponse save(Long lessonId,TaskRequest taskRequest) {
+        try {
+            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NoSuchElementException("Lesson with id: " + lessonId + " not found"));
+            Task task = new Task();
+            task.setTaskName(taskRequest.getTaskName());
+            task.setTaskText(taskRequest.getTaskText());
+            task.setDeadLine(LocalDate.now());
+            task.setLesson(lesson);
+            lesson.getTasks().add(task);
+            taskRepository.save(task);
+            lessonRepository.save(lesson);
+            return TaskResponse.builder().id(task.getId()).taskName(taskRequest.getTaskName()).taskText(taskRequest.getTaskText()).deadline(taskRequest.getDeadline()).build();
+        } catch (Exception e) {
+            throw new NoSuchElementException("Task with id:" + lessonId + " is not found");
+        }
     }
 
     @Override
@@ -47,22 +48,34 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
-        Task taskResponse = taskRepository.findById(id).orElseThrow(() -> new NullPointerException("Task with id: " + id + " is not found"));
-        taskResponse.setTaskName(taskRequest.getTaskName());
-        taskResponse.setTaskText(taskRequest.getTaskText());
-        taskResponse.setDeadline(taskRequest.getDeadline());
-        taskRepository.save(taskResponse);
-        return new TaskResponse(taskResponse.getId(),taskResponse.getTaskName(),taskResponse.getTaskText(),taskResponse.getDeadline());
+    public TaskResponse getTaskById(Long taskId) {
+        return taskRepository.getTaskById(taskId).orElseThrow(() -> new RuntimeException("Task with id: " + taskId + " not found!"));
+
+    }
+    @Override
+    public TaskResponse updateTask(Long taskId, TaskRequest taskRequest) {
+        Task task=taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task with id: " + taskId + "not found!"));
+        task.setTaskName(taskRequest.getTaskName());
+        task.setTaskText(taskRequest.getTaskText());
+        task.setDeadLine(LocalDate.now());
+        taskRepository.save(task);
+        return TaskResponse.builder().id(task.getId()).taskName((taskRequest.getTaskName())).taskText(taskRequest.getTaskText()).deadline(taskRequest.getDeadline()).build();
     }
 
+
     @Override
-    public String deleteString(Long id) {
-        boolean exists=taskRepository.existsById(id);
-        if (!exists){
-            throw new NoSuchElementException("Task with id: " + id + " is not found");
+    public String deleteTask(Long taskId) {
+        try {
+            Task task = taskRepository.findById(taskId)
+                    .orElseThrow(() -> new RuntimeException("Course with id: " + taskId + " not found!"));
+            Lesson lesson = task.getLesson();
+            if (lesson != null) {
+                lesson.getTasks().remove(task);
+            }
+            taskRepository.delete(task);
+            return "Task with id: " + taskId + " is deleted...";
+        } catch (RuntimeException e) {
+            return  "Failed to delete task: " + e.getMessage();
         }
-        taskRepository.deleteById(id);
-        return "Task with id: " + id + " is deleted...";
     }
 }

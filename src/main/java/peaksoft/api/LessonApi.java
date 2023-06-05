@@ -1,5 +1,6 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.request.LessonRequest;
@@ -31,6 +32,6 @@ public class LessonApi {
     }
     @DeleteMapping("/{id}")
     public String deleteLesson(@PathVariable Long id){
-        return lessonService.deleteString(id);
+        return lessonService.deleteLesson(id);
     }
 }

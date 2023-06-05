@@ -1,5 +1,6 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.request.CourseRequest;
@@ -29,7 +30,6 @@ public class GroupApi {
     public GroupResponse getGroupById(@PathVariable Long id){
         return groupService.getGroupById(id);
     }
-
     @PutMapping("/{id}")
     public GroupResponse updateGroup(@PathVariable Long id,@RequestBody GroupRequest groupRequest){
         return groupService.updateGroup(id, groupRequest);
@@ -37,6 +37,6 @@ public class GroupApi {
 
     @DeleteMapping("/{id}")
     public String deleteGroup(@PathVariable Long id){
-        return groupService.deleteString(id);
+        return groupService.deleteGroup(id);
     }
 }

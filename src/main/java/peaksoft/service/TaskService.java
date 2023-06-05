@@ -8,9 +8,10 @@ import peaksoft.entity.Task;
 import java.util.List;
 
 public interface TaskService {
-    TaskResponse saveTask(Long lessonId,TaskRequest taskRequest);
-    TaskResponse getTaskById(Long id);
+    TaskResponse save(Long lessonId,TaskRequest taskRequest);
     List<TaskResponse> getAllTasks(Long lessonId);
-    TaskResponse updateTask(Long id, TaskRequest taskRequest);
-    String deleteString(Long id);
+    TaskResponse getTaskById(Long taskId);
+
+    TaskResponse updateTask(Long taskId, TaskRequest taskRequest);
+    String deleteTask(Long taskId);
 }

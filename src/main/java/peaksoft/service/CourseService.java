@@ -8,36 +8,9 @@ import peaksoft.entity.Course;
 import java.util.List;
 
 public interface CourseService {
-    CourseResponse savaCourse(Long companyId, CourseRequest courseRequest);
-
-    CourseResponse getCourseById(Long id);
-
+    String saveCourse(Long companyId, CourseRequest courseRequest);
     List<CourseResponse> getAllCourse(Long companyId, String ascOrDesc);
-
-    CourseResponse updateCourse(Long id, CourseRequest courseRequest);
-
-    String deleteString(Long id);
+    String getCourseById(Long courseId);
+    CourseResponse updateCourse(Long courseId, CourseRequest courseRequest);
+    String deleteCourseById(Long courseId);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    String assignCourseToInstructor(Long courseId,Long instructorId);

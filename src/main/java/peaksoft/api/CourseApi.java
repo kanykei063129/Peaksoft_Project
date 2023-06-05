@@ -1,6 +1,8 @@
 package peaksoft.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.request.CompanyRequest;
@@ -23,12 +25,12 @@ public class CourseApi {
     }
 
     @PostMapping("/save/{companyId}")
-    public CourseResponse saveCourse(@PathVariable Long companyId, @RequestBody CourseRequest courseRequest) {
-        return courseService.savaCourse(companyId, courseRequest);
+    public String saveCourse(@PathVariable Long companyId, @RequestBody CourseRequest courseRequest) {
+        return courseService.saveCourse(companyId, courseRequest);
     }
 
     @GetMapping("/by/{id}")
-    public CourseResponse getCourseById(@PathVariable Long id){
+    public String getCourseById(@PathVariable Long id){
         return courseService.getCourseById(id);
     }
 
@@ -39,7 +41,6 @@ public class CourseApi {
 
     @DeleteMapping("/{id}")
     public String deleteCourse(@PathVariable Long id){
-        return courseService.deleteString(id);
+        return courseService.deleteCourseById(id);
     }
 }
-

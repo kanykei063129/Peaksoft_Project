@@ -4,21 +4,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Parent;
-import org.intellij.lang.annotations.Pattern;
 import peaksoft.enums.Country;
 
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "companies")
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 public class Company {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "company_gen")
-    @SequenceGenerator(name = "company_gen",sequenceName = "company_seq",allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "company_gen")
+    @SequenceGenerator(name = "company_gen", sequenceName = "company_seq", allocationSize = 1)
     private Long id;
     @Column(unique = true)
     private String name;
@@ -27,8 +27,11 @@ public class Company {
     private String address;
     @Column(unique = true)
     private String phoneNumber;
-    @ManyToMany(mappedBy = "companies",cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH})
-    private List<Instructor>instructors;
-    @OneToMany(mappedBy = "company",cascade = {CascadeType.ALL})
-    private List<Course>courses;
+
+    @OneToMany(mappedBy = "company", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    private List<Course> courses;
+
+    @ManyToMany(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH, REMOVE })
+    private List<Instructor> instructors;
 }
+

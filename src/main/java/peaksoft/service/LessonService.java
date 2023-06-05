@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface LessonService {
     LessonResponse saveLesson(Long courseId,LessonRequest lessonRequest);
-    LessonResponse getLessonById(Long id);
     List<LessonResponse> getAllLessons(Long courseId);
-    LessonResponse updateLesson(Long id, LessonRequest lessonRequest);
-    String deleteString(Long id);
+    LessonResponse getLessonById(Long lessonId);
+    LessonResponse updateLesson(Long lessonId, LessonRequest lessonRequest);
+    String deleteLesson(Long lessonId);
 }

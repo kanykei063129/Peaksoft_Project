@@ -19,4 +19,9 @@ public interface InstructorRepository extends JpaRepository<Instructor,Long> {
     @Query("SELECT new peaksoft.dto.response.InstructorResponse(i.id,i.firstName,i.lastName,i.specialization) FROM Instructor i")
     List<InstructorResponse> getAllInstructors();
 
+    @Query("select count(s) from Instructor i join i.courses c join  c.groups g join g.students s where i.id=:instructorId")
+    int getAllStudentSize(Long instructorId);
+    @Query("select g.groupName from Instructor i join i.courses c join  c.groups g where i.id =:instructorId")
+    List<String> getAllGroupName(Long instructorId);
+
 }
